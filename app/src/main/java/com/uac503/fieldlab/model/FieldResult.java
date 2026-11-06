@@ -1,26 +1,18 @@
 package com.uac503.fieldlab.model;
 
 public class FieldResult {
-    private double x;
-    private double y;
-    private double ex;
-    private double ey;
-    private double magnitude;
-    private double potential;
+    public double ex;
+    public double ey;
+    public double eMagnitude;
+    public double angleDegrees;
+    public double potential;
 
-    public FieldResult(double x, double y, double ex, double ey, double magnitude, double potential) {
-        this.x = x;
-        this.y = y;
+
+    public FieldResult(double ex, double ey, double eMagnitude, double angleDegrees, double potential) {
         this.ex = ex;
         this.ey = ey;
-        this.magnitude = magnitude;
+        this.eMagnitude = eMagnitude;
+        this.angleDegrees = angleDegrees;
         this.potential = potential;
     }
-
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getEx() { return ex; }
-    public double getEy() { return ey; }
-    public double getMagnitude() { return magnitude; }
-    public double getPotential() { return potential; }
 }

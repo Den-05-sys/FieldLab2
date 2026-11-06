@@ -4,12 +4,14 @@ plugins {
 
 android {
     namespace 'com.uac503.fieldlab'
-    compileSdk 34
+    //noinspection GradleDependency
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.uac503.fieldlab"
         minSdk 24
-        targetSdk 34
+        //noinspection OldTargetApi
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 
@@ -23,8 +25,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -40,12 +42,18 @@ dependencies {
 
     // Room Database (SQLite)
     implementation 'androidx.room:room-runtime:2.6.1'
+    implementation libs.androidx.activity.ktx
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
-
-    // Gson (para convertir listas de objetos a JSON en SQLite)
-    implementation 'com.google.gson:gson:2.10.1'
 
     // Lifecycle / ViewModel / LiveData
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
+
+    // Testing
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

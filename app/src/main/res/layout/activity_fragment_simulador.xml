@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0E1117">
+
+
+    <!-- Lienzo interactivo del simulador -->
+    <com.uac503.fieldlab.ui.simulator.SimulatorView
+        android:id="@+id/simulator_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_panel" />
+
+
+    <!-- Barra de Herramientas y Resultados (Bottom Sheet / Panel) -->
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#1A1F2B"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+
+        <!-- Fila de Botones para agregar cargas -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add_pos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#E53935"
+                android:text="+ Carga"
+                app:cornerRadius="12dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add_neg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#1E88E5"
+                android:text="- Carga"
+                app:cornerRadius="12dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_save_scenario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#4CAF50"
+                android:text="Guardar DB"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+
+        <!-- Panel con resultados de la Sonda -->
+        <TextView
+            android:id="@+id/tv_probe_results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="#242B3A"
+            android:fontFamily="monospace"
+            android:padding="12dp"
+            android:text="▲ ANÁLISIS EN LA SONDA\nPos: (0.0 , 0.0) m\n|E| = 0.00 N/C\nV = 0.00 V"
+            android:textColor="#FFD54F"
+            android:textSize="12sp" />
+    </LinearLayout>
+</RelativeLayout>

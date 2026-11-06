@@ -2,30 +2,28 @@ package com.uac503.fieldlab.model;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import java.util.List;
+
 
 @Entity(tableName = "scenarios")
 public class Scenario {
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private int id;
     private String name;
-    private String description;
-    private long createdAt;
+    private List<Charge> charges;
+    private String dateCreated;
 
-    public Scenario(String name, String description, long createdAt) {
+
+    public Scenario(String name, List<Charge> charges, String dateCreated) {
         this.name = name;
-        this.description = description;
-        this.createdAt = createdAt;
+        this.charges = charges;
+        this.dateCreated = dateCreated;
     }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
 
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public long getCreatedAt() { return createdAt; }
-    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
+    public List<Charge> getCharges() { return charges; }
+    public String getDateCreated() { return dateCreated; }
 }
