@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-
     <TextView
         android:id="@+id/tv_quiz_question"
         android:layout_width="match_parent"
@@ -15,28 +14,26 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-
     <RadioGroup
         android:id="@+id/rg_quiz_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp">
 
-
         <RadioButton
             android:id="@+id/rb_opt1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Se duplica la fuerza"
             android:textColor="#FFFFFF" />
-
 
         <RadioButton
             android:id="@+id/rb_opt2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Se reduce a 1/4 de la fuerza original"
             android:textColor="#FFFFFF" />
     </RadioGroup>
-
 
     <Button
         android:id="@+id/btn_submit_answer"

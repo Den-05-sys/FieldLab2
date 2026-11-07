@@ -35,22 +35,28 @@ public class SimuladorFragment extends Fragment {
 
         Button btnAddPos = root.findViewById(R.id.btn_add_pos);
         Button btnAddNeg = root.findViewById(R.id.btn_add_neg);
-        Button btnSave = root.findViewById(R.id.btn_save);
+        Button btnSave = root.findViewById(R.id.btn_save_scenario);
 
         // Añadir carga positiva (+3 µC)
-        btnAddPos.setOnClickListener(v -> {
-            simulatorView.addCharge(400, 400, 3.0f);
-            updateProbeData();
-        });
+        if (btnAddPos != null) {
+            btnAddPos.setOnClickListener(v -> {
+                simulatorView.addCharge(400, 400, 3.0f);
+                updateProbeData();
+            });
+        }
 
         // Añadir carga negativa (-3 µC)
-        btnAddNeg.setOnClickListener(v -> {
-            simulatorView.addCharge(600, 400, -3.0f);
-            updateProbeData();
-        });
+        if (btnAddNeg != null) {
+            btnAddNeg.setOnClickListener(v -> {
+                simulatorView.addCharge(600, 400, -3.0f);
+                updateProbeData();
+            });
+        }
 
         // Guardar escenario en SQLite (Room)
-        btnSave.setOnClickListener(v -> saveScenarioToDb());
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> saveScenarioToDb());
+        }
 
         // Actualizar sonda en refresco de pantalla
         simulatorView.setOnTouchListener((v, event) -> {
@@ -63,6 +69,7 @@ public class SimuladorFragment extends Fragment {
     }
 
     private void updateProbeData() {
+        if (simulatorView == null || tvProbeResults == null) return;
         float px = simulatorView.getProbeX();
         float py = simulatorView.getProbeY();
 
@@ -75,18 +82,23 @@ public class SimuladorFragment extends Fragment {
     }
 
     private void saveScenarioToDb() {
-        if (simulatorView.getCharges().isEmpty()) {
+        if (simulatorView == null || simulatorView.getCharges().isEmpty()) {
             Toast.makeText(getContext(), "Agrega al menos una carga", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        android.content.Context context = getContext();
+        if (context == null) return;
+
         Scenario scenario = new Scenario("Dipolo / Configuración", simulatorView.getCharges(), "2026-10-29");
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase.getInstance(requireContext()).scenarioDao().insertScenario(scenario);
-            requireActivity().runOnUiThread(() ->
-                    Toast.makeText(getContext(), "¡Escenario guardado en SQLite!", Toast.LENGTH_SHORT).show()
-            );
+            AppDatabase.getInstance(context.getApplicationContext()).scenarioDao().insertScenario(scenario);
+            if (isAdded() && getActivity() != null) {
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(context, "¡Escenario guardado en SQLite!", Toast.LENGTH_SHORT).show()
+                );
+            }
         });
     }
 }
