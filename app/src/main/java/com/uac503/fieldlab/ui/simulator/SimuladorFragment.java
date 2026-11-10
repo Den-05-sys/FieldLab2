@@ -1,5 +1,7 @@
 package com.uac503.fieldlab.ui.simulator;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +16,15 @@ import androidx.fragment.app.Fragment;
 
 import com.uac503.fieldlab.R;
 import com.uac503.fieldlab.data.db.AppDatabase;
+import com.uac503.fieldlab.model.Calculation;
+import com.uac503.fieldlab.model.Charge;
 import com.uac503.fieldlab.model.FieldResult;
 import com.uac503.fieldlab.model.Scenario;
 import com.uac503.fieldlab.physics.PhysicsCalculator;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class SimuladorFragment extends Fragment {
@@ -40,30 +47,36 @@ public class SimuladorFragment extends Fragment {
         // Añadir carga positiva (+3 µC)
         if (btnAddPos != null) {
             btnAddPos.setOnClickListener(v -> {
-                simulatorView.addCharge(400, 400, 3.0f);
-                updateProbeData();
+                if (simulatorView != null) {
+                    simulatorView.addCharge(400, 400, 3.0f);
+                    updateProbeData();
+                }
             });
         }
 
         // Añadir carga negativa (-3 µC)
         if (btnAddNeg != null) {
             btnAddNeg.setOnClickListener(v -> {
-                simulatorView.addCharge(600, 400, -3.0f);
-                updateProbeData();
+                if (simulatorView != null) {
+                    simulatorView.addCharge(600, 400, -3.0f);
+                    updateProbeData();
+                }
             });
         }
 
-        // Guardar escenario en SQLite (Room)
+        // Guardar cálculos y escenario en SQLite (Room)
         if (btnSave != null) {
-            btnSave.setOnClickListener(v -> saveScenarioToDb());
+            btnSave.setOnClickListener(v -> saveCalculationToDb());
         }
 
-        // Actualizar sonda en refresco de pantalla
-        simulatorView.setOnTouchListener((v, event) -> {
-            simulatorView.onTouchEvent(event);
-            updateProbeData();
-            return true;
-        });
+        // Actualizar datos de la sonda al tocar o arrastrar
+        if (simulatorView != null) {
+            simulatorView.setOnTouchListener((v, event) -> {
+                simulatorView.onTouchEvent(event);
+                updateProbeData();
+                return true;
+            });
+        }
 
         return root;
     }
@@ -75,28 +88,73 @@ public class SimuladorFragment extends Fragment {
 
         FieldResult res = PhysicsCalculator.calculateAtPoint(px, py, simulatorView.getCharges());
 
-        String info = String.format("Pos: (%.0f, %.0f)px | |E|: %.2e N/C | V: %.2e V",
+        String info = String.format(Locale.getDefault(),
+                "Pos: (%.0f, %.0f)px | |E|: %.2e N/C | V: %.2e V",
                 px, py, res.eMagnitude, res.potential);
 
         tvProbeResults.setText(info);
     }
 
-    private void saveScenarioToDb() {
+    private void saveCalculationToDb() {
         if (simulatorView == null || simulatorView.getCharges().isEmpty()) {
-            Toast.makeText(getContext(), "Agrega al menos una carga", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Agrega al menos una carga antes de guardar", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        android.content.Context context = getContext();
+        Context context = getContext();
         if (context == null) return;
 
-        Scenario scenario = new Scenario("Dipolo / Configuración", simulatorView.getCharges(), "2026-10-29");
+        SharedPreferences preferences =
+                context.getSharedPreferences("FieldLabPrefs", Context.MODE_PRIVATE);
+
+        int userId = preferences.getInt("user_id", -1);
+
+        float px = simulatorView.getProbeX();
+        float py = simulatorView.getProbeY();
+
+        FieldResult res = PhysicsCalculator.calculateAtPoint(px, py, simulatorView.getCharges());
+
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+        double calculatedTotalCharge = 0;
+        double calculatedMinDistance = Double.MAX_VALUE;
+
+        for (Charge charge : simulatorView.getCharges()) {
+            calculatedTotalCharge += charge.getCharge();
+            double dx = px - charge.getX();
+            double dy = py - charge.getY();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < calculatedMinDistance) {
+                calculatedMinDistance = distance;
+            }
+        }
+
+        final double finalTotalCharge = calculatedTotalCharge;
+        final double finalMinDistance = calculatedMinDistance;
+
+        Scenario scenario = new Scenario("Configuración " + date, simulatorView.getCharges(), date);
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase.getInstance(context.getApplicationContext()).scenarioDao().insertScenario(scenario);
+            AppDatabase db = AppDatabase.getInstance(context.getApplicationContext());
+
+            // Guardar escenario
+            db.scenarioDao().insertScenario(scenario);
+
+            // Guardar cálculos si el usuario está autenticado
+            if (userId != -1) {
+                Calculation fieldCalculation = new Calculation(
+                        userId, "Campo eléctrico", finalTotalCharge, finalMinDistance, res.eMagnitude, "N/C", date
+                );
+                Calculation potentialCalculation = new Calculation(
+                        userId, "Potencial eléctrico", finalTotalCharge, finalMinDistance, res.potential, "V", date
+                );
+                db.calculationDao().insertCalculation(fieldCalculation);
+                db.calculationDao().insertCalculation(potentialCalculation);
+            }
+
             if (isAdded() && getActivity() != null) {
                 getActivity().runOnUiThread(() ->
-                        Toast.makeText(context, "¡Escenario guardado en SQLite!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "¡Escenario y cálculos guardados correctamente!", Toast.LENGTH_SHORT).show()
                 );
             }
         });
