@@ -25,13 +25,20 @@ public class SimulatorView extends View {
     private final Paint paintNeg = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintProbe = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintVector = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintGrid = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 
-    private float probeX = 300, probeY = 300;
+    private float probeX = 400, probeY = 500;
     private int selectedIndex = -1;
     private boolean draggingProbe = false;
-    private boolean showVectors = true;
+    private boolean isDragging = false;
+    private OnProbeChangeListener probeChangeListener;
+
+
+    public interface OnProbeChangeListener {
+        void onProbeChanged(float x, float y);
+    }
 
 
     public SimulatorView(Context context, AttributeSet attrs) {
@@ -41,29 +48,51 @@ public class SimulatorView extends View {
 
 
     private void init() {
-        paintPos.setColor(Color.parseColor("#E53935"));
-        paintNeg.setColor(Color.parseColor("#1E88E5"));
+        paintPos.setColor(Color.parseColor("#FF5252"));
+        paintNeg.setColor(Color.parseColor("#448AFF"));
         paintProbe.setColor(Color.parseColor("#FFD54F"));
-        paintVector.setColor(Color.parseColor("#26C6DA"));
-        paintVector.setStrokeWidth(4f);
+        paintVector.setColor(Color.parseColor("#00E676"));
+        paintVector.setStrokeWidth(3f);
+
+
+        paintGrid.setColor(Color.parseColor("#1A2130"));
+        paintGrid.setStrokeWidth(2f);
+
+
         paintText.setColor(Color.WHITE);
-        paintText.setTextSize(32f);
+        paintText.setTextSize(28f);
         paintText.setTextAlign(Paint.Align.CENTER);
+    }
+
+
+    public void setOnProbeChangeListener(OnProbeChangeListener listener) {
+        this.probeChangeListener = listener;
     }
 
 
     public void addCharge(float x, float y, float q) {
         charges.add(new Charge(x, y, q));
         invalidate();
+        notifyProbe();
+    }
+
+
+    public void clearCharges() {
+        charges.clear();
+        invalidate();
+        notifyProbe();
     }
 
 
     public List<Charge> getCharges() { return charges; }
     public float getProbeX() { return probeX; }
     public float getProbeY() { return probeY; }
-    public void setVectorVisibility(boolean visible) {
-        this.showVectors = visible;
-        invalidate();
+
+
+    private void notifyProbe() {
+        if (probeChangeListener != null) {
+            probeChangeListener.onProbeChanged(probeX, probeY);
+        }
     }
 
 
@@ -73,16 +102,38 @@ public class SimulatorView extends View {
         canvas.drawColor(Color.parseColor("#0E1117"));
 
 
-        // Dibujar Malla de Vectores de Campo
-        if (showVectors && !charges.isEmpty()) {
-            int step = 80;
-            for (int x = 40; x < getWidth(); x += step) {
-                for (int y = 40; y < getHeight(); y += step) {
+        // 1. DIBUJAR GRID DE FONDO
+        int stepGrid = 60;
+        for (int x = 0; x < getWidth(); x += stepGrid) {
+            canvas.drawLine(x, 0, x, getHeight(), paintGrid);
+        }
+        for (int y = 0; y < getHeight(); y += stepGrid) {
+            canvas.drawLine(0, y, getWidth(), y, paintGrid);
+        }
+
+
+        // 2. DIBUJAR VECTORES Y MAPA
+        if (!isDragging && !charges.isEmpty() && getWidth() > 0) {
+            int step = 90;
+            for (int x = 45; x < getWidth(); x += step) {
+                for (int y = 45; y < getHeight(); y += step) {
                     FieldResult res = PhysicsCalculator.calculateAtPoint(x, y, charges);
                     if (res.eMagnitude > 0) {
-                        float len = (float) Math.min(30, Math.log10(res.eMagnitude + 1) * 8);
+                        float len = (float) Math.min(30, Math.log10(res.eMagnitude + 1) * 7);
                         float dx = (float) (len * Math.cos(Math.toRadians(res.angleDegrees)));
                         float dy = (float) (len * Math.sin(Math.toRadians(res.angleDegrees)));
+
+
+                        // Ajustar color por potencial
+                        if (res.potential > 0) {
+                            paintVector.setColor(Color.parseColor("#FF8A80"));
+                        } else if (res.potential < 0) {
+                            paintVector.setColor(Color.parseColor("#82B1FF"));
+                        } else {
+                            paintVector.setColor(Color.parseColor("#00E676"));
+                        }
+
+
                         canvas.drawLine(x, y, x + dx, y + dy, paintVector);
                     }
                 }
@@ -90,17 +141,18 @@ public class SimulatorView extends View {
         }
 
 
-        // Dibujar Cargas Puntuales
+        // 3. DIBUJAR CARGAS PUNTUALES
         for (Charge c : charges) {
             Paint p = c.getCharge() >= 0 ? paintPos : paintNeg;
-            canvas.drawCircle(c.getX(), c.getY(), 36f, p);
-            String txt = (c.getCharge() > 0 ? "+" : "") + (int) c.getCharge();
+            canvas.drawCircle(c.getX(), c.getY(), 42f, p);
+            String txt = (c.getCharge() > 0 ? "+" : "") + (int) c.getCharge() + "µC";
             canvas.drawText(txt, c.getX(), c.getY() + 10f, paintText);
         }
 
 
-        // Dibujar Sonda
-        canvas.drawCircle(probeX, probeY, 18f, paintProbe);
+        // 4. DIBUJAR SONDA DE MEDICIÓN
+        canvas.drawCircle(probeX, probeY, 20f, paintProbe);
+        canvas.drawCircle(probeX, probeY, 35f, paintProbe);
     }
 
 
@@ -112,13 +164,15 @@ public class SimulatorView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (Math.hypot(x - probeX, y - probeY) < 50) {
+                if (Math.hypot(x - probeX, y - probeY) < 70) {
                     draggingProbe = true;
+                    isDragging = true;
                     return true;
                 }
                 for (int i = 0; i < charges.size(); i++) {
-                    if (Math.hypot(x - charges.get(i).getX(), y - charges.get(i).getY()) < 50) {
+                    if (Math.hypot(x - charges.get(i).getX(), y - charges.get(i).getY()) < 70) {
                         selectedIndex = i;
+                        isDragging = true;
                         return true;
                     }
                 }
@@ -130,17 +184,22 @@ public class SimulatorView extends View {
                     probeX = x;
                     probeY = y;
                     invalidate();
+                    notifyProbe();
                 } else if (selectedIndex != -1) {
                     charges.get(selectedIndex).setX(x);
                     charges.get(selectedIndex).setY(y);
                     invalidate();
+                    notifyProbe();
                 }
                 break;
 
 
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
                 draggingProbe = false;
                 selectedIndex = -1;
+                isDragging = false;
+                invalidate();
                 break;
         }
         return true;

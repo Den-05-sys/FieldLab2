@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0E1117"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Análisis Vectorial en Plano Cartesiano (X, Y)"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+    <com.uac503.fieldlab.ui.simulator.CartesianView
+        android:id="@+id/cartesian_view"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"
+        android:layout_marginTop="12dp" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="12dp">
+
+
+        <TextView
+            android:id="@+id/tv_cartesian_breakdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#1A1F2B"
+            android:fontFamily="monospace"
+            android:padding="16dp"
+            android:text="DESGLOSE VECTORIAL PASO A PASO:\n-------------------------------\nPunto P = (0.12, 0.00) m\nq1 = -2.00 µC en (0.00, 0.00) m\nq2 = +5.00 µC en (0.00, 0.10) m\n\nComponente Ex = 1.66e+05 N/C\nComponente Ey = -1.18e+06 N/C\n|E_total| = 1.19e+06 N/C\nÁngulo θ = -81.9°"
+            android:textColor="#FFD54F"
+            android:textSize="13sp" />
+    </ScrollView>
+</LinearLayout>

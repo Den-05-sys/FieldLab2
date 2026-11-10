@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0E1117">
+
+
+    <com.uac503.fieldlab.ui.simulator.SimulatorView
+        android:id="@+id/simulator_view_2d"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/panel_controls" />
+
+
+    <LinearLayout
+        android:id="@+id/panel_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#1A1F2B"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add_pos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FF5252"
+                android:text="+ Carga (+3µC)"
+                app:cornerRadius="12dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_add_neg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#448AFF"
+                android:text="- Carga (-3µC)"
+                app:cornerRadius="12dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#E53935"
+                android:text="Limpiar"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tv_probe_results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="#242B3A"
+            android:fontFamily="monospace"
+            android:padding="12dp"
+            android:text="▲ LECTURA DE SONDA EN TIEMPO REAL\nPosición: (0.00, 0.00) px\n|E| = 0.00 N/C\nV = 0.00 V"
+            android:textColor="#FFD54F"
+            android:textSize="12sp" />
+    </LinearLayout>
+</RelativeLayout>

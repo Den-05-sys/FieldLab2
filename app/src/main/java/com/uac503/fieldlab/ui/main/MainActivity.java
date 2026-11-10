@@ -1,6 +1,5 @@
 package com.uac503.fieldlab.ui.main;
 
-
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -12,30 +11,22 @@ import com.uac503.fieldlab.ui.scenarios.ScenariosFragment;
 import com.uac503.fieldlab.ui.simulator.SimuladorFragment;
 import com.uac503.fieldlab.ui.theory.TheoryFragment;
 
-
 public class MainActivity extends AppCompatActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment())
-                    .commit();
+            loadFragment(new HomeFragment());
         }
-
 
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
-
 
             if (itemId == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
@@ -49,13 +40,17 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new ProfileFragment();
             }
 
-
             if (selectedFragment != null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, selectedFragment)
-                        .commit();
+                loadFragment(selectedFragment);
+                return true;
             }
-            return true;
+            return false;
         });
+    }
+
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 }
