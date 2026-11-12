@@ -4,7 +4,6 @@
     package="com.uac503.fieldlab">
 
 
-    <!-- Permiso opcional para vibración háptica al mover cargas -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
 
@@ -20,7 +19,7 @@
         tools:targetApi="34">
 
 
-        <!-- 1. Pantalla de Carga Inicial (Punto de entrada de la App) -->
+        <!-- 1. Pantalla de Carga Inicial -->
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true"
@@ -55,13 +54,13 @@
 
 
         <activity
-            android:name=".ui.auth.ForgotPasswordActivity"
+            android:name=".ui.auth.ForgotActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
 
-        <!-- 4. Contenedor Principal (Aloja Home, Simulador 2D/Cartesiano, Biblioteca, Teoría, Perfil y Acerca de) -->
+        <!-- 4. Contenedor Principal (Home, Simulador 2D/Cartesiano, Biblioteca, Teoría, Perfil, Acerca de y Retos) -->
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="false"

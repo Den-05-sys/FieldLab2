@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
             if (itemId == R.id.nav_home) tag = "HOME";
             else if (itemId == R.id.nav_simulator) tag = "SIM";
             else if (itemId == R.id.nav_scenarios) tag = "SCEN";
+            else if (itemId == R.id.nav_challenges) tag = "CHALLENGES";
             else if (itemId == R.id.nav_theory) tag = "THEORY";
             else if (itemId == R.id.nav_about) tag = "ABOUT";
 
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             case "THEORY": return new TheoryFragment();
             case "PROFILE": return new ProfileFragment();
             case "ABOUT": return new AboutFragment();
+            case "CHALLENGES": return new com.uac503.fieldlab.ui.challenges.ChallengesFragment();
             default: return new HomeFragment();
         }
     }

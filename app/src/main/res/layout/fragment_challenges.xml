@@ -1,24 +1,302 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E1117"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="#0B0E14"
+    android:fillViewport="true">
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🎯 Retos de Física"
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_challenges"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+
+        <!-- Barra Superior: Regresar | Vidas | Puntos | Tiempo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back_home"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="48dp"
+                android:paddingHorizontal="8dp"
+                android:text="← Salir"
+                android:textColor="#9AA4B2" />
+
+
+            <TextView
+                android:id="@+id/tv_lives"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="❤️❤️❤️"
+                android:textSize="16sp" />
+
+
+            <TextView
+                android:id="@+id/tv_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:fontFamily="monospace"
+                android:text="⚡ 0 pts"
+                android:textColor="#FFD54F"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_telemetry_panel"
+                android:fontFamily="monospace"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="00:45"
+                android:textColor="#00E676"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+        <!-- Barra de progreso del reto -->
+        <ProgressBar
+            android:id="@+id/progress_challenge"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginTop="10dp"
+            android:max="100"
+            android:progress="20"
+            android:progressTint="#D0BCFF" />
+
+
+        <!-- Etiqueta de Nivel y Racha -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/tv_challenge_badge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="RETO 1 DE 5 • LEY DE COULOMB"
+                android:textColor="#D0BCFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_streak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔥 Racha: 0"
+                android:textColor="#FF8A80"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+        <!-- Tarjeta Principal del Enunciado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_telemetry_panel"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+
+            <TextView
+                android:id="@+id/tv_challenge_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Equilibrio Electrostático"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_challenge_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="4dp"
+                android:text="Tienes una carga q₁ = +4.0 µC en x = 0 m y una carga q₂ = +1.0 µC en x = 3.0 m. Ajusta la posición x de una carga de prueba para que el campo eléctrico neto sea |E| = 0 N/C."
+                android:textColor="#E0E6ED"
+                android:textSize="14sp" />
+
+
+            <!-- Datos Físicos en tiempo real -->
+            <TextView
+                android:id="@+id/tv_live_formula"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#11141D"
+                android:fontFamily="monospace"
+                android:padding="10dp"
+                android:text="x = 1.50 m  →  |E| neto = 1.20e+04 N/C"
+                android:textColor="#82B1FF"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+
+        <!-- Zona Interactiva 1: Deslizador de Laboratorio (Para retos de ajuste) -->
+        <LinearLayout
+            android:id="@+id/layout_slider_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_telemetry_panel"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+
+            <TextView
+                android:id="@+id/tv_slider_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Desliza para ajustar el valor objetivo:"
+                android:textColor="#9AA4B2"
+                android:textSize="12sp" />
+
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/slider_challenge_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:stepSize="0.1"
+                android:value="1.5"
+                android:valueFrom="0.1"
+                android:valueTo="2.9"
+                app:thumbColor="#00E676"
+                app:trackColorActive="#00E676"
+                app:trackColorInactive="#383E4E" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_verify_slider"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="8dp"
+                android:text="Verificar Medición"
+                android:textColor="#0B0E14"
+                android:textStyle="bold"
+                app:backgroundTint="#00E676"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+
+        <!-- Zona Interactiva 2: Opciones Rápidas (Para retos conceptuales/cálculo) -->
+        <LinearLayout
+            android:id="@+id/layout_options_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_opt_1"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="start|center_vertical"
+                android:text="A) Opción 1"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="12dp"
+                app:strokeColor="#383E4E" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_opt_2"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="start|center_vertical"
+                android:text="B) Opción 2"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="12dp"
+                app:strokeColor="#383E4E" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_opt_3"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="start|center_vertical"
+                android:text="C) Opción 3"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="12dp"
+                app:strokeColor="#383E4E" />
+        </LinearLayout>
+
+
+        <!-- Panel de Retroalimentación / Explicación Física -->
+        <LinearLayout
+            android:id="@+id/layout_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_telemetry_panel"
+            android:orientation="vertical"
+            android:padding="14dp"
+            android:visibility="gone">
+
+
+            <TextView
+                android:id="@+id/tv_feedback_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✅ ¡Excelente! Punto de equilibrio encontrado"
+                android:textColor="#00E676"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_feedback_explanation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Explicación física..."
+                android:textColor="#E0E6ED"
+                android:textSize="13sp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_next_challenge"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:text="Siguiente Reto →"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#353148"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>

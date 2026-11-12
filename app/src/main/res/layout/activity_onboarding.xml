@@ -52,4 +52,4 @@
             android:textColor="#0E1117"
             app:cornerRadius="24dp" />
     </LinearLayout>
-</RelativeLayout>}
+</RelativeLayout>

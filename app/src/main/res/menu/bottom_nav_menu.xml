@@ -13,6 +13,10 @@
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="Biblioteca" />
     <item
+        android:id="@+id/nav_challenges"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Retos" />
+    <item
         android:id="@+id/nav_theory"
         android:icon="@android:drawable/ic_menu_help"
         android:title="Teoría" />
