@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         activeFragment = targetFragment;
-        transaction.commit();
+        transaction.commitAllowingStateLoss(); // Evita fallos silenciosos de transacción
     }
 
 
