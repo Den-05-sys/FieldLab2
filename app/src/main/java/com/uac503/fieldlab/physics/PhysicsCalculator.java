@@ -1,49 +1,85 @@
 package com.uac503.fieldlab.physics;
 
+
 import com.uac503.fieldlab.model.Charge;
 import com.uac503.fieldlab.model.FieldResult;
+
+
+import java.util.ArrayList;
 import java.util.List;
 
+
 public class PhysicsCalculator {
-    public static final double K = 8.98755e9; // Constante de Coulomb (N·m²/C²)
+    public static final double K = 8.9875517923e9; // Constante de Coulomb (N·m²/C²)
+    public static final float PIXELS_PER_METER = 150.0f;
 
-    public static FieldResult calculateAtPoint(float px, float py, List<Charge> charges) {
-        double ex = 0;
-        double ey = 0;
-        double potential = 0;
 
-        for (Charge c : charges) {
-            double dx = px - c.getX();
-            double dy = py - c.getY();
-            double r2 = dx * dx + dy * dy;
+    public static class ChargeContribution {
+        public int index;
+        public float baseValue;
+        public String unitSymbol;
+        public double distanceMeters;
+        public double eContribution;
+    }
+
+
+    public static class DetailedFieldResult extends FieldResult {
+        public double ex;
+        public double ey;
+        public List<ChargeContribution> contributions = new ArrayList<>();
+    }
+
+
+    public static DetailedFieldResult calculateDetailed(float px, float py, List<Charge> charges) {
+        DetailedFieldResult result = new DetailedFieldResult();
+        double exTotal = 0.0;
+        double eyTotal = 0.0;
+        double vTotal = 0.0;
+
+
+        for (int i = 0; i < charges.size(); i++) {
+            Charge c = charges.get(i);
+            double dxMeters = (px - c.getX()) / PIXELS_PER_METER;
+            double dyMeters = (c.getY() - py) / PIXELS_PER_METER; // Eje Y cartesiano hacia arriba
+            double r2 = dxMeters * dxMeters + dyMeters * dyMeters;
             double r = Math.sqrt(r2);
 
-            if (r < 1e-3) continue; // Evitar división por cero cerca de la carga
 
-            double qCoulombs = c.getCharge() * 1e-6; // Convertir µC a C
+            if (r < 0.02) r = 0.02; // Evitar singularidad (r -> 0)
+            r2 = r * r;
 
-            // Magnitud del campo E = k * |q| / r²
-            double eMag = K * Math.abs(qCoulombs) / r2;
 
-            // Dirección
-            double unitX = dx / r;
-            double unitY = dy / r;
+            double qCoulombs = c.getChargeInCoulombs();
+            double eMag = (K * Math.abs(qCoulombs)) / r2;
+            double eSigned = (K * qCoulombs) / r2;
 
-            // Si la carga es positiva repele, si es negativa atrae
-            if (c.getCharge() < 0) {
-                eMag = -eMag;
-            }
 
-            ex += eMag * unitX;
-            ey += eMag * unitY;
+            exTotal += eSigned * (dxMeters / r);
+            eyTotal += eSigned * (dyMeters / r);
+            vTotal += (K * qCoulombs) / r;
 
-            // Potencial escalar V = k * q / r
-            potential += K * qCoulombs / r;
+
+            ChargeContribution contrib = new ChargeContribution();
+            contrib.index = i + 1;
+            contrib.baseValue = c.getBaseValue();
+            contrib.unitSymbol = c.getUnitSymbol();
+            contrib.distanceMeters = r;
+            contrib.eContribution = eMag;
+            result.contributions.add(contrib);
         }
 
-        double totalE = Math.sqrt(ex * ex + ey * ey);
-        double angle = Math.toDegrees(Math.atan2(ey, ex));
 
-        return new FieldResult(ex, ey, totalE, angle, potential);
+        result.ex = exTotal;
+        result.ey = eyTotal;
+        result.eMagnitude = Math.hypot(exTotal, eyTotal);
+        result.angleDegrees = Math.toDegrees(Math.atan2(eyTotal, exTotal));
+        result.potential = vTotal;
+        return result;
+    }
+
+
+    // Método de compatibilidad para otras vistas
+    public static FieldResult calculateAtPoint(float px, float py, List<Charge> charges) {
+        return calculateDetailed(px, py, charges);
     }
 }

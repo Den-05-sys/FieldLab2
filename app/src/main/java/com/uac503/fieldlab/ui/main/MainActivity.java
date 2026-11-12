@@ -1,56 +1,102 @@
 package com.uac503.fieldlab.ui.main;
 
+
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.uac503.fieldlab.R;
+import com.uac503.fieldlab.ui.about.AboutFragment;
 import com.uac503.fieldlab.ui.home.HomeFragment;
 import com.uac503.fieldlab.ui.profile.ProfileFragment;
 import com.uac503.fieldlab.ui.scenarios.ScenariosFragment;
 import com.uac503.fieldlab.ui.simulator.SimuladorFragment;
 import com.uac503.fieldlab.ui.theory.TheoryFragment;
 
+
 public class MainActivity extends AppCompatActivity {
+
+
+    private Fragment activeFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        FragmentManager fm = getSupportFragmentManager();
+
 
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+            activeFragment = new HomeFragment();
+            fm.beginTransaction()
+                    .add(R.id.fragment_container, activeFragment, "HOME")
+                    .commit();
+        } else {
+            activeFragment = fm.findFragmentById(R.id.fragment_container);
         }
 
+
         bottomNav.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
             int itemId = item.getItemId();
+            String tag = "";
 
-            if (itemId == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
-            } else if (itemId == R.id.nav_simulator) {
-                selectedFragment = new SimuladorFragment();
-            } else if (itemId == R.id.nav_scenarios) {
-                selectedFragment = new ScenariosFragment();
-            } else if (itemId == R.id.nav_theory) {
-                selectedFragment = new TheoryFragment();
-            } else if (itemId == R.id.nav_profile) {
-                selectedFragment = new ProfileFragment();
-            }
 
-            if (selectedFragment != null) {
-                loadFragment(selectedFragment);
-                return true;
-            }
-            return false;
+            if (itemId == R.id.nav_home) tag = "HOME";
+            else if (itemId == R.id.nav_simulator) tag = "SIM";
+            else if (itemId == R.id.nav_scenarios) tag = "SCEN";
+            else if (itemId == R.id.nav_theory) tag = "THEORY";
+            else if (itemId == R.id.nav_about) tag = "ABOUT";
+
+
+            if (tag.isEmpty()) return false;
+
+
+            switchFragment(tag);
+            return true;
         });
     }
 
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
+
+    public void switchFragment(String tag) {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment targetFragment = fm.findFragmentByTag(tag);
+        FragmentTransaction transaction = fm.beginTransaction();
+
+
+        if (activeFragment != null && activeFragment != targetFragment) {
+            transaction.hide(activeFragment);
+        }
+
+
+        if (targetFragment == null) {
+            targetFragment = createFragmentByTag(tag);
+            transaction.add(R.id.fragment_container, targetFragment, tag);
+        } else {
+            transaction.show(targetFragment);
+        }
+
+
+        activeFragment = targetFragment;
+        transaction.commit();
+    }
+
+
+    private Fragment createFragmentByTag(String tag) {
+        switch (tag) {
+            case "SIM": return new SimuladorFragment();
+            case "SCEN": return new ScenariosFragment();
+            case "THEORY": return new TheoryFragment();
+            case "PROFILE": return new ProfileFragment();
+            case "ABOUT": return new AboutFragment();
+            default: return new HomeFragment();
+        }
     }
 }

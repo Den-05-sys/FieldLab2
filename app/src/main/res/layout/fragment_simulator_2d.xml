@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E1117">
+    android:background="#0B0E14"
+    android:orientation="vertical">
 
 
+    <!-- 1. Lienzo Interactivo Superior -->
     <com.uac503.fieldlab.ui.simulator.SimulatorView
         android:id="@+id/simulator_view_2d"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/panel_controls" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 
+    <!-- 2. Panel de Herramientas Inferior -->
     <LinearLayout
-        android:id="@+id/panel_controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#1A1F2B"
+        android:background="#11141D"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:paddingHorizontal="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="10dp">
 
 
+        <!-- Fila 1: + Carga + | - Carga - | Sonda | Partícula -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,44 +36,316 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_pos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#FF5252"
-                android:text="+ Carga (+3µC)"
-                app:cornerRadius="12dp" />
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="4dp"
+                android:text="+ Carga +"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                app:backgroundTint="#2E2A3B"
+                app:cornerRadius="10dp" />
 
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_neg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#448AFF"
-                android:text="- Carga (-3µC)"
-                app:cornerRadius="12dp" />
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="4dp"
+                android:text="− Carga −"
+                android:textColor="#E0E6ED"
+                android:textSize="12sp"
+                app:cornerRadius="10dp"
+                app:strokeColor="#383E4E" />
 
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_clear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#E53935"
-                android:text="Limpiar"
-                app:cornerRadius="12dp" />
+                android:id="@+id/btn_toggle_probe"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.85"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="4dp"
+                android:text="Sonda"
+                android:textColor="#FFD54F"
+                android:textSize="12sp"
+                app:backgroundTint="#242936"
+                app:cornerRadius="10dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_particle"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="0.9"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="4dp"
+                android:text="▶ Prueba"
+                android:textColor="#00E676"
+                android:textSize="11sp"
+                app:cornerRadius="10dp"
+                app:strokeColor="#2E4B3E" />
         </LinearLayout>
 
 
-        <TextView
-            android:id="@+id/tv_probe_results"
+        <!-- Fila 2: Capas Visuales (Vectores | Líneas | Potencial) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="#242B3A"
-            android:fontFamily="monospace"
-            android:padding="12dp"
-            android:text="▲ LECTURA DE SONDA EN TIEMPO REAL\nPosición: (0.00, 0.00) px\n|E| = 0.00 N/C\nV = 0.00 V"
-            android:textColor="#FFD54F"
-            android:textSize="12sp" />
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_layer_vectors"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Vectores"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                app:backgroundTint="#353148"
+                app:cornerRadius="10dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_layer_lines"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Líneas"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                app:backgroundTint="#353148"
+                app:cornerRadius="10dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_layer_potential"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Potencial"
+                android:textColor="#9AA4B2"
+                android:textSize="12sp"
+                app:cornerRadius="10dp"
+                app:strokeColor="#383E4E" />
+        </LinearLayout>
+
+
+        <!-- Fila 3: Presets Rápidos (Dipolo | Iguales | Cuadrupolo | Limpiar) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/btn_preset_dipole"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:padding="0dp"
+                android:text="Dipolo"
+                android:textColor="#D0BCFF"
+                android:textSize="12sp" />
+
+
+            <Button
+                android:id="@+id/btn_preset_equal"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:padding="0dp"
+                android:text="Iguales"
+                android:textColor="#D0BCFF"
+                android:textSize="12sp" />
+
+
+            <Button
+                android:id="@+id/btn_preset_quad"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:padding="0dp"
+                android:text="Cuadrupolo"
+                android:textColor="#D0BCFF"
+                android:textSize="12sp" />
+
+
+            <Button
+                android:id="@+id/btn_clear"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:padding="0dp"
+                android:text="Limpiar"
+                android:textColor="#FF8A80"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+
+        <!-- Fila 4: Ajuste de Magnitud (Slider) + Selector de Unidades (C, mC, µC, nC, pC) + Borrar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/tv_charge_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:minWidth="88dp"
+                android:text="q = -2.8 µC"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/slider_charge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:stepSize="0.2"
+                android:value="-2.8"
+                android:valueFrom="-10.0"
+                android:valueTo="10.0"
+                app:thumbColor="#D0BCFF"
+                app:trackColorActive="#D0BCFF"
+                app:trackColorInactive="#383E4E" />
+
+
+            <Spinner
+                android:id="@+id/spinner_units"
+                android:layout_width="68dp"
+                android:layout_height="34dp"
+                android:background="#1D2230"
+                android:popupBackground="#1D2230" />
+
+
+            <Button
+                android:id="@+id/btn_delete_selected"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:minWidth="54dp"
+                android:paddingHorizontal="6dp"
+                android:text="Borrar"
+                android:textColor="#D0BCFF"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+
+        <!-- Fila 5: Tarjeta de Telemetría y Desglose de Superposición -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_telemetry_panel"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+
+            <TextView
+                android:id="@+id/tv_probe_pos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="Posición: (1.00 , 1.00) m"
+                android:textColor="#E0E6ED"
+                android:textSize="11sp" />
+
+
+            <TextView
+                android:id="@+id/tv_probe_components"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="monospace"
+                android:text="Ex = 0.000e+00 N/C    Ey = 0.000e+00 N/C"
+                android:textColor="#E0E6ED"
+                android:textSize="11sp" />
+
+
+            <TextView
+                android:id="@+id/tv_probe_magnitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="monospace"
+                android:text="|E| = 0.000e+00 N/C   θ = 0.0°"
+                android:textColor="#FFD54F"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/tv_probe_potential"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="monospace"
+                android:text="V  = 0.000e+00 V"
+                android:textColor="#E0E6ED"
+                android:textSize="11sp" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Superposición (aporte de cada carga):"
+                android:textColor="#9AA4B2"
+                android:textSize="10sp" />
+
+
+            <TextView
+                android:id="@+id/tv_superposition_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="monospace"
+                android:maxLines="4"
+                android:text="Sin cargas activas en el lienzo"
+                android:textColor="#82B1FF"
+                android:textSize="11sp" />
+        </LinearLayout>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

@@ -1,34 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.uac503.fieldlab">
+
+
+    <!-- Permiso opcional para vibración háptica al mover cargas -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FieldLab">
+        android:theme="@style/Theme.FieldLab"
+        tools:targetApi="34">
 
-        <!-- Splash Screen como Lanzador Principal -->
+
+        <!-- 1. Pantalla de Carga Inicial (Punto de entrada de la App) -->
         <activity
             android:name=".ui.splash.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.main.MainActivity" android:exported="false" />
+
+        <!-- 2. Diapositivas de Introducción -->
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+
+        <!-- 3. Módulo de Autenticación -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
-        <activity android:name=".ui.auth.RegisterActivity" android:exported="false" />
-        <activity android:name=".ui.quiz.QuizActivity" android:exported="false" />
-        <activity android:name=".ui.auth.ForgotActivity" android:exported="false" />
-        <activity android:name=".ui.onboarding.OnboardingActivity" android:exported="false" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+
+        <activity
+            android:name=".ui.auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+
+        <!-- 4. Contenedor Principal (Aloja Home, Simulador 2D/Cartesiano, Biblioteca, Teoría, Perfil y Acerca de) -->
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
+
+        <!-- 5. Módulo de Evaluación (Quiz) -->
+        <activity
+            android:name=".ui.quiz.QuizActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
 
     </application>
+
 
 </manifest>

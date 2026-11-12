@@ -8,6 +8,9 @@ public class FieldResult {
     public double potential;
 
 
+    public FieldResult() {
+    }
+
     public FieldResult(double ex, double ey, double eMagnitude, double angleDegrees, double potential) {
         this.ex = ex;
         this.ey = ey;
