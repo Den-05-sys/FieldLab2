@@ -2,6 +2,10 @@ package com.uac503.fieldlab.ui.main;
 
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.PopupMenu;
+
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -46,15 +50,20 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+
+
+            // Interceptar el quinto botón ("Más") para abrir el menú secundario
+            if (itemId == R.id.nav_more) {
+                mostrarMenuMas(bottomNav);
+                return false;
+            }
+
+
             String tag = "";
-
-
             if (itemId == R.id.nav_home) tag = "HOME";
             else if (itemId == R.id.nav_simulator) tag = "SIM";
             else if (itemId == R.id.nav_scenarios) tag = "SCEN";
             else if (itemId == R.id.nav_challenges) tag = "CHALLENGES";
-            else if (itemId == R.id.nav_theory) tag = "THEORY";
-            else if (itemId == R.id.nav_about) tag = "ABOUT";
 
 
             if (tag.isEmpty()) return false;
@@ -63,6 +72,35 @@ public class MainActivity extends AppCompatActivity {
             switchFragment(tag);
             return true;
         });
+    }
+
+
+    private void mostrarMenuMas(BottomNavigationView bottomNav) {
+        View anchorView = bottomNav.findViewById(R.id.nav_more);
+        PopupMenu popup = new PopupMenu(this, anchorView != null ? anchorView : bottomNav);
+        popup.getMenuInflater().inflate(R.menu.menu_more_options, popup.getMenu());
+
+
+        popup.setOnMenuItemClickListener(menuItem -> {
+            int subId = menuItem.getItemId();
+            String tag = "";
+
+
+            if (subId == R.id.nav_theory) tag = "THEORY";
+            else if (subId == R.id.nav_about) tag = "ABOUT";
+            // Si en el futuro agregas Perfil a menu_more_options.xml, solo descomenta la siguiente línea:
+            // else if (subId == R.id.nav_profile) tag = "PROFILE";
+
+
+            if (!tag.isEmpty()) {
+                switchFragment(tag);
+                return true;
+            }
+            return false;
+        });
+
+
+        popup.show();
     }
 
 
@@ -86,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         activeFragment = targetFragment;
-        transaction.commitAllowingStateLoss(); // Evita fallos silenciosos de transacción
+        transaction.commitAllowingStateLoss();
     }
 
 

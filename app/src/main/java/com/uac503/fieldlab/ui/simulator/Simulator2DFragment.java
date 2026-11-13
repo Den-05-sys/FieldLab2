@@ -40,9 +40,10 @@ public class Simulator2DFragment extends Fragment {
     private Spinner spinnerUnits;
 
 
+    // Unidades soportadas (micro, nano, pico, mili, Coulomb)
     private final String[] unitSymbols = {"µC", "nC", "pC", "mC", "C"};
     private final double[] unitFactors = {1e-6, 1e-9, 1e-12, 1e-3, 1.0};
-    private int currentUnitIndex = 0; // Por defecto µC (microcoulombs)
+    private int currentUnitIndex = 0; // Por defecto µC
     private boolean updatingFromCode = false;
 
 
@@ -52,6 +53,7 @@ public class Simulator2DFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_simulator_2d, container, false);
 
 
+        // Vincular vistas
         simulatorView = root.findViewById(R.id.simulator_view_2d);
         tvChargeValue = root.findViewById(R.id.tv_charge_value);
         tvProbePos = root.findViewById(R.id.tv_probe_pos);
@@ -64,10 +66,11 @@ public class Simulator2DFragment extends Fragment {
 
 
         setupUnitSpinner();
-        setupButtons(root);
-        setupSlider();
+        setupAllButtons(root);
+        setupChargeSlider();
 
 
+        // Escuchar actualizaciones en tiempo real desde el lienzo
         simulatorView.setOnSimulatorListener(new SimulatorView.OnSimulatorListener() {
             @Override
             public void onDataUpdated(PhysicsCalculator.DetailedFieldResult res, float xm, float ym) {
@@ -81,6 +84,18 @@ public class Simulator2DFragment extends Fragment {
                     updatingFromCode = true;
                     float clamped = Math.max(-10f, Math.min(10f, charge.getBaseValue()));
                     sliderCharge.setValue(clamped);
+
+
+                    // Sincronizar el spinner con la unidad de la carga seleccionada
+                    for (int i = 0; i < unitSymbols.length; i++) {
+                        if (unitSymbols[i].equals(charge.getUnitSymbol())) {
+                            currentUnitIndex = i;
+                            spinnerUnits.setSelection(i);
+                            break;
+                        }
+                    }
+
+
                     tvChargeValue.setText(String.format(Locale.US, "q = %+.1f %s", clamped, charge.getUnitSymbol()));
                     updatingFromCode = false;
                 } else {
@@ -90,7 +105,7 @@ public class Simulator2DFragment extends Fragment {
         });
 
 
-        // Iniciar con un dipolo listo en pantalla como en la imagen
+        // Cargar un Dipolo por defecto al abrir el simulador
         simulatorView.post(() -> simulatorView.loadPreset("DIPOLE", unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]));
 
 
@@ -98,6 +113,7 @@ public class Simulator2DFragment extends Fragment {
     }
 
 
+    /** Configura el desplegable de unidades (µC, nC, pC, mC, C) */
     private void setupUnitSpinner() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, unitSymbols) {
             @NonNull
@@ -127,6 +143,9 @@ public class Simulator2DFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentUnitIndex = position;
+                if (updatingFromCode) return;
+
+
                 float val = sliderCharge.getValue();
                 tvChargeValue.setText(String.format(Locale.US, "q = %+.1f %s", val, unitSymbols[currentUnitIndex]));
                 simulatorView.updateSelectedChargeValue(val, unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]);
@@ -139,7 +158,8 @@ public class Simulator2DFragment extends Fragment {
     }
 
 
-    private void setupSlider() {
+    /** Configura el deslizador de magnitud de carga (-10.0 a +10.0) */
+    private void setupChargeSlider() {
         sliderCharge.addOnChangeListener((slider, value, fromUser) -> {
             if (updatingFromCode) return;
             String sym = unitSymbols[currentUnitIndex];
@@ -149,21 +169,25 @@ public class Simulator2DFragment extends Fragment {
     }
 
 
-    private void setupButtons(View root) {
+    /** Conecta todos los botones de acción, capas visuales y presets */
+    private void setupAllButtons(View root) {
+        // 1. Agregar Carga Positiva (+2.0)
         root.findViewById(R.id.btn_add_pos).setOnClickListener(v -> {
-            float x = 250f + (float) (Math.random() * 350f);
-            float y = 220f + (float) (Math.random() * 250f);
+            float x = 220f + (float) (Math.random() * 400f);
+            float y = 200f + (float) (Math.random() * 280f);
             simulatorView.addCharge(x, y, 2.0f, unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]);
         });
 
 
+        // 2. Agregar Carga Negativa (-2.8)
         root.findViewById(R.id.btn_add_neg).setOnClickListener(v -> {
-            float x = 250f + (float) (Math.random() * 350f);
-            float y = 220f + (float) (Math.random() * 250f);
+            float x = 220f + (float) (Math.random() * 400f);
+            float y = 200f + (float) (Math.random() * 280f);
             simulatorView.addCharge(x, y, -2.8f, unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]);
         });
 
 
+        // 3. Mostrar / Ocultar Sonda
         MaterialButton btnProbe = root.findViewById(R.id.btn_toggle_probe);
         btnProbe.setOnClickListener(v -> {
             boolean active = simulatorView.toggleProbe();
@@ -171,6 +195,7 @@ public class Simulator2DFragment extends Fragment {
         });
 
 
+        // 4. Iniciar / Pausar Partícula de Prueba Dinámica
         MaterialButton btnParticle = root.findViewById(R.id.btn_particle);
         btnParticle.setOnClickListener(v -> {
             boolean running = simulatorView.toggleTestParticle();
@@ -178,31 +203,41 @@ public class Simulator2DFragment extends Fragment {
         });
 
 
+        // 5. Capa: Vectores
         MaterialButton btnVectors = root.findViewById(R.id.btn_layer_vectors);
         btnVectors.setOnClickListener(v -> updateToggleStyle(btnVectors, simulatorView.toggleVectors()));
 
 
+        // 6. Capa: Líneas de campo
         MaterialButton btnLines = root.findViewById(R.id.btn_layer_lines);
         btnLines.setOnClickListener(v -> updateToggleStyle(btnLines, simulatorView.toggleLines()));
 
 
+        // 7. Capa: Mapa de Potencial
         MaterialButton btnPotential = root.findViewById(R.id.btn_layer_potential);
         btnPotential.setOnClickListener(v -> updateToggleStyle(btnPotential, simulatorView.togglePotential()));
 
 
+        // 8. Preset: Dipolo (+ y -)
         root.findViewById(R.id.btn_preset_dipole).setOnClickListener(v ->
                 simulatorView.loadPreset("DIPOLE", unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]));
 
 
+        // 9. Preset: Cargas Iguales (+ y +)
         root.findViewById(R.id.btn_preset_equal).setOnClickListener(v ->
                 simulatorView.loadPreset("EQUAL", unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]));
 
 
+        // 10. Preset: Cuadrupolo (4 cargas alternadas)
         root.findViewById(R.id.btn_preset_quad).setOnClickListener(v ->
                 simulatorView.loadPreset("QUADRUPOLE", unitFactors[currentUnitIndex], unitSymbols[currentUnitIndex]));
 
 
+        // 11. Limpiar todo el lienzo
         root.findViewById(R.id.btn_clear).setOnClickListener(v -> simulatorView.clearAll());
+
+
+        // 12. Borrar únicamente la carga seleccionada
         root.findViewById(R.id.btn_delete_selected).setOnClickListener(v -> simulatorView.removeSelectedCharge());
     }
 
@@ -218,6 +253,7 @@ public class Simulator2DFragment extends Fragment {
     }
 
 
+    /** Actualiza el panel inferior con lecturas en metros y el desglose de superposición */
     private void updateTelemetryPanel(PhysicsCalculator.DetailedFieldResult res, float xm, float ym) {
         tvProbePos.setText(String.format(Locale.US, "Posición: (%.2f , %.2f) m", xm, ym));
         tvProbeComp.setText(String.format(Locale.US, "Ex = %.3e N/C    Ey = %.3e N/C", res.ex, res.ey));

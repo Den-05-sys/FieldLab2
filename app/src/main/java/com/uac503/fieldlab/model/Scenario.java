@@ -14,6 +14,8 @@ public class Scenario {
     private String dateCreated;
 
 
+    public Scenario() {}
+
     public Scenario(String name, List<Charge> charges, String dateCreated) {
         this.name = name;
         this.charges = charges;
@@ -24,6 +26,9 @@ public class Scenario {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
     public List<Charge> getCharges() { return charges; }
+    public void setCharges(List<Charge> charges) { this.charges = charges; }
     public String getDateCreated() { return dateCreated; }
+    public void setDateCreated(String dateCreated) { this.dateCreated = dateCreated; }
 }

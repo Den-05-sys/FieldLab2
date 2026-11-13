@@ -11,6 +11,8 @@ public class User {
     private String email;
     private String passwordHash;
 
+    public User() {}
+
     public User(String name, String email, String passwordHash) {
         this.name = name;
         this.email = email;

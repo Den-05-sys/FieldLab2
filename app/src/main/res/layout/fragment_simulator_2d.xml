@@ -6,14 +6,12 @@
     android:background="#0B0E14"
     android:orientation="vertical">
 
-
     <!-- 1. Lienzo Interactivo Superior -->
     <com.uac503.fieldlab.ui.simulator.SimulatorView
         android:id="@+id/simulator_view_2d"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
 
     <!-- 2. Panel de Herramientas Inferior -->
     <LinearLayout
@@ -25,14 +23,12 @@
         android:paddingTop="8dp"
         android:paddingBottom="10dp">
 
-
-        <!-- Fila 1: + Carga + | - Carga - | Sonda | Partícula -->
+        <!-- Fila 1: + Carga + | - Carga - | Sonda | Partícula de Prueba -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
-
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_pos"
@@ -50,7 +46,6 @@
                 app:backgroundTint="#2E2A3B"
                 app:cornerRadius="10dp" />
 
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_neg"
                 style="@style/Widget.Material3.Button.OutlinedButton"
@@ -66,7 +61,6 @@
                 android:textSize="12sp"
                 app:cornerRadius="10dp"
                 app:strokeColor="#383E4E" />
-
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_toggle_probe"
@@ -84,7 +78,6 @@
                 app:backgroundTint="#242936"
                 app:cornerRadius="10dp" />
 
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_particle"
                 style="@style/Widget.Material3.Button.OutlinedButton"
@@ -101,7 +94,6 @@
                 app:strokeColor="#2E4B3E" />
         </LinearLayout>
 
-
         <!-- Fila 2: Capas Visuales (Vectores | Líneas | Potencial) -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,7 +101,6 @@
             android:layout_marginTop="6dp"
             android:gravity="center"
             android:orientation="horizontal">
-
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_layer_vectors"
@@ -126,7 +117,6 @@
                 app:backgroundTint="#353148"
                 app:cornerRadius="10dp" />
 
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_layer_lines"
                 style="@style/Widget.Material3.Button.TonalButton"
@@ -141,7 +131,6 @@
                 android:textSize="12sp"
                 app:backgroundTint="#353148"
                 app:cornerRadius="10dp" />
-
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_layer_potential"
@@ -158,7 +147,6 @@
                 app:strokeColor="#383E4E" />
         </LinearLayout>
 
-
         <!-- Fila 3: Presets Rápidos (Dipolo | Iguales | Cuadrupolo | Limpiar) -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -166,7 +154,6 @@
             android:layout_marginTop="4dp"
             android:gravity="center"
             android:orientation="horizontal">
-
 
             <Button
                 android:id="@+id/btn_preset_dipole"
@@ -179,7 +166,6 @@
                 android:textColor="#D0BCFF"
                 android:textSize="12sp" />
 
-
             <Button
                 android:id="@+id/btn_preset_equal"
                 style="@style/Widget.Material3.Button.TextButton"
@@ -191,7 +177,6 @@
                 android:textColor="#D0BCFF"
                 android:textSize="12sp" />
 
-
             <Button
                 android:id="@+id/btn_preset_quad"
                 style="@style/Widget.Material3.Button.TextButton"
@@ -202,7 +187,6 @@
                 android:text="Cuadrupolo"
                 android:textColor="#D0BCFF"
                 android:textSize="12sp" />
-
 
             <Button
                 android:id="@+id/btn_clear"
@@ -216,8 +200,7 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-
-        <!-- Fila 4: Ajuste de Magnitud (Slider) + Selector de Unidades (C, mC, µC, nC, pC) + Borrar -->
+        <!-- Fila 4: Ajuste de Magnitud (Slider Material 3) + Unidades + Borrar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -225,18 +208,16 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-
             <TextView
                 android:id="@+id/tv_charge_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
-                android:minWidth="88dp"
+                android:minWidth="86dp"
                 android:text="q = -2.8 µC"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />
-
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/slider_charge"
@@ -249,8 +230,8 @@
                 android:valueTo="10.0"
                 app:thumbColor="#D0BCFF"
                 app:trackColorActive="#D0BCFF"
-                app:trackColorInactive="#383E4E" />
-
+                app:trackColorInactive="#2E2C39"
+                app:trackHeight="14dp" />
 
             <Spinner
                 android:id="@+id/spinner_units"
@@ -258,7 +239,6 @@
                 android:layout_height="34dp"
                 android:background="#1D2230"
                 android:popupBackground="#1D2230" />
-
 
             <Button
                 android:id="@+id/btn_delete_selected"
@@ -272,7 +252,6 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-
         <!-- Fila 5: Tarjeta de Telemetría y Desglose de Superposición -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -282,7 +261,6 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-
             <TextView
                 android:id="@+id/tv_probe_pos"
                 android:layout_width="match_parent"
@@ -291,7 +269,6 @@
                 android:text="Posición: (1.00 , 1.00) m"
                 android:textColor="#E0E6ED"
                 android:textSize="11sp" />
-
 
             <TextView
                 android:id="@+id/tv_probe_components"
@@ -303,7 +280,6 @@
                 android:textColor="#E0E6ED"
                 android:textSize="11sp" />
 
-
             <TextView
                 android:id="@+id/tv_probe_magnitude"
                 android:layout_width="match_parent"
@@ -311,10 +287,8 @@
                 android:layout_marginTop="2dp"
                 android:fontFamily="monospace"
                 android:text="|E| = 0.000e+00 N/C   θ = 0.0°"
-                android:textColor="#FFD54F"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
+                android:textColor="#E0E6ED"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/tv_probe_potential"
@@ -326,15 +300,14 @@
                 android:textColor="#E0E6ED"
                 android:textSize="11sp" />
 
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="monospace"
                 android:text="Superposición (aporte de cada carga):"
                 android:textColor="#9AA4B2"
                 android:textSize="10sp" />
-
 
             <TextView
                 android:id="@+id/tv_superposition_list"
@@ -342,9 +315,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:fontFamily="monospace"
-                android:maxLines="4"
                 android:text="Sin cargas activas en el lienzo"
-                android:textColor="#82B1FF"
+                android:textColor="#E0E6ED"
                 android:textSize="11sp" />
         </LinearLayout>
     </LinearLayout>

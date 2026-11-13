@@ -113,6 +113,10 @@ public class SimulatorView extends View {
     }
 
 
+    public void addCharge(float x, float y, float baseVal) {
+        addCharge(x, y, baseVal, 1e-6, "µC");
+    }
+
     public void addCharge(float x, float y, float baseVal, double unitFactor, String symbol) {
         charges.add(new Charge(x, y, baseVal, unitFactor, symbol));
         selectedChargeIndex = charges.size() - 1;
@@ -150,6 +154,18 @@ public class SimulatorView extends View {
             return charges.get(selectedChargeIndex);
         }
         return null;
+    }
+
+    public float getProbeX() {
+        return probeX;
+    }
+
+    public float getProbeY() {
+        return probeY;
+    }
+
+    public List<Charge> getCharges() {
+        return charges;
     }
 
 
@@ -279,33 +295,49 @@ public class SimulatorView extends View {
         }
 
 
-        // 4. CARGAS PUNTUALES (+ y -)
+        // 4. CARGAS PUNTUALES CON BORDE BLANCO (Igual a la imagen)
+        Paint paintWhiteBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintWhiteBorder.setColor(Color.WHITE);
+        paintWhiteBorder.setStyle(Paint.Style.STROKE);
+        paintWhiteBorder.setStrokeWidth(4.5f);
+
+
         for (int i = 0; i < charges.size(); i++) {
             Charge c = charges.get(i);
             boolean isPos = c.getBaseValue() >= 0;
-            canvas.drawCircle(c.getX(), c.getY(), 26f, isPos ? paintPos : paintNeg);
+            float radius = 22f;
+
+
+            canvas.drawCircle(c.getX(), c.getY(), radius, isPos ? paintPos : paintNeg);
+            canvas.drawCircle(c.getX(), c.getY(), radius, paintWhiteBorder);
+
+
             if (i == selectedChargeIndex) {
-                canvas.drawCircle(c.getX(), c.getY(), 31f, paintSelectedRing);
+                paintSelectedRing.setColor(Color.parseColor("#D0BCFF"));
+                canvas.drawCircle(c.getX(), c.getY(), radius + 7f, paintSelectedRing);
             }
-            canvas.drawText(isPos ? "+" : "−", c.getX(), c.getY() + 11f, paintText);
+            paintText.setTextSize(30f);
+            canvas.drawText(isPos ? "+" : "−", c.getX(), c.getY() + 10f, paintText);
         }
 
 
-        // 5. SONDA DE MEDICIÓN + VECTOR BLANCO RESULTANTE
+        // 5. SONDA DE MEDICIÓN AMARILLA + VECTOR BLANCO RESULTANTE
         if (showProbe) {
-            canvas.drawCircle(probeX, probeY, 14f, paintProbe);
-            canvas.drawLine(probeX - 20, probeY, probeX + 20, probeY, paintProbe);
-            canvas.drawLine(probeX, probeY - 20, probeX, probeY + 20, paintProbe);
+            paintProbe.setColor(Color.parseColor("#FFD54F"));
+            paintProbe.setStrokeWidth(3f);
+            canvas.drawCircle(probeX, probeY, 10f, paintProbe);
+            canvas.drawLine(probeX - 18, probeY, probeX + 18, probeY, paintProbe);
+            canvas.drawLine(probeX, probeY - 18, probeX, probeY + 18, paintProbe);
 
 
             if (!charges.isEmpty()) {
                 PhysicsCalculator.DetailedFieldResult probeRes = PhysicsCalculator.calculateDetailed(probeX, probeY, charges);
                 if (probeRes.eMagnitude > 0) {
-                    float arrowLen = (float) Math.min(110f, Math.max(35f, Math.log10(probeRes.eMagnitude + 1) * 18f));
+                    float arrowLen = 65f;
                     double rad = Math.toRadians(-probeRes.angleDegrees);
                     float endX = probeX + (float) (arrowLen * Math.cos(rad));
                     float endY = probeY + (float) (arrowLen * Math.sin(rad));
-                    drawArrow(canvas, probeX, probeY, endX, endY, 16f, paintProbeArrow);
+                    drawArrow(canvas, probeX, probeY, endX, endY, 15f, paintProbeArrow);
                 }
             }
         }
