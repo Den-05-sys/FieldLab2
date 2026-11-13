@@ -4,13 +4,11 @@ plugins {
 
 android {
     namespace 'com.uac503.fieldlab'
-    //noinspection GradleDependency
     compileSdk 36
 
     defaultConfig {
         applicationId "com.uac503.fieldlab"
         minSdk 24
-        //noinspection OldTargetApi
         targetSdk 36
         versionCode 1
         versionName "1.0"
@@ -42,7 +40,6 @@ dependencies {
 
     // Room Database (SQLite)
     implementation 'androidx.room:room-runtime:2.6.1'
-    implementation libs.androidx.activity.ktx
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
 
     // Lifecycle / ViewModel / LiveData
@@ -54,6 +51,6 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 }

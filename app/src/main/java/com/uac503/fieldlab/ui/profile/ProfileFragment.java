@@ -26,12 +26,15 @@ public class ProfileFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
 
+        TextView tvName = root.findViewById(R.id.tv_profile_name);
         TextView tvEmail = root.findViewById(R.id.tv_profile_email);
         Button btnLogout = root.findViewById(R.id.btn_logout);
 
 
         SharedPreferences prefs = requireActivity().getSharedPreferences("FieldLabPrefs", Context.MODE_PRIVATE);
+        String name = prefs.getString("user_name", "Estudiante");
         String email = prefs.getString("user_email", "estudiante@fieldlab.edu");
+        if (tvName != null) tvName.setText(name);
         if (tvEmail != null) tvEmail.setText(email);
 
 
