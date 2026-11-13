@@ -3,6 +3,7 @@ package com.uac503.fieldlab.ui.auth;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -38,10 +39,22 @@ public class RegisterActivity extends AppCompatActivity {
                 String email = etEmail != null ? etEmail.getText().toString().trim() : "";
                 String pass = etPassword != null ? etPassword.getText().toString() : "";
 
-                if (email.isEmpty() || pass.isEmpty()) {
-                    Toast.makeText(this, "Por favor completa el correo y la contraseña", Toast.LENGTH_SHORT).show();
+                if (name.isEmpty()) {
+                    etName.setError("Ingresa tu nombre");
+                    etName.requestFocus();
                     return;
                 }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.setError("Ingresa un correo válido");
+                    etEmail.requestFocus();
+                    return;
+                }
+                if (pass.length() < 8) {
+                    etPassword.setError("Usa al menos 8 caracteres");
+                    etPassword.requestFocus();
+                    return;
+                }
+                final String normalizedEmail = email.toLowerCase(java.util.Locale.ROOT);
 
                 btnRegister.setEnabled(false);
 
@@ -49,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
                     try {
                         AppDatabase db = AppDatabase.getInstance(getApplicationContext());
 
-                        if (db.userDao().emailExists(email) > 0) {
+                        if (db.userDao().emailExists(normalizedEmail) > 0) {
                             runOnUiThread(() -> {
                                 btnRegister.setEnabled(true);
                                 Toast.makeText(this, "El correo electrónico ya está registrado", Toast.LENGTH_SHORT).show();
@@ -60,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
                         String passwordHash = PasswordHasher.hash(pass);
                         String userName = name.isEmpty() ? "Estudiante" : name;
 
-                        User user = new User(userName, email, passwordHash);
+                        User user = new User(userName, normalizedEmail, passwordHash);
                         long id = db.userDao().insertUser(user);
 
                         runOnUiThread(() -> {
@@ -69,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 SharedPreferences prefs = getSharedPreferences("FieldLabPrefs", MODE_PRIVATE);
                                 prefs.edit()
                                         .putBoolean("is_logged_in", true)
-                                        .putString("user_email", email)
+                                        .putString("user_email", normalizedEmail)
                                         .putString("user_name", userName)
                                         .putInt("user_id", (int) id)
                                         .apply();

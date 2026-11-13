@@ -21,6 +21,7 @@
         android:background="#1A1F2B"
         app:itemIconTint="#FFD54F"
         app:itemTextColor="#FFFFFF"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
 
 

@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
             btnLogin.setOnClickListener(v -> {
 
-                String email = etEmail.getText().toString().trim();
+                String email = etEmail.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
                 String pass = etPassword.getText().toString();
 
                 if (email.isEmpty() || pass.isEmpty()) {

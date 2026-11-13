@@ -13,13 +13,13 @@ public interface UserDao {
     @Insert
     long insertUser(User user);
 
-    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    @Query("SELECT * FROM users WHERE email = :email COLLATE NOCASE LIMIT 1")
     User getUserByEmail(String email);
 
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     User getUserById(int id);
 
-    @Query("SELECT COUNT(*) FROM users WHERE email = :email")
+    @Query("SELECT COUNT(*) FROM users WHERE email = :email COLLATE NOCASE")
     int emailExists(String email);
 }
 

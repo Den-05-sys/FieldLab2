@@ -2,17 +2,22 @@ package com.uac503.fieldlab.ui.simulator;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.text.InputType;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.uac503.fieldlab.R;
 import com.uac503.fieldlab.data.db.AppDatabase;
@@ -35,7 +40,7 @@ public class SimuladorFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.activity_fragment_simulador, container, false);
+        View root = inflater.inflate(R.layout.fragment_simulador, container, false);
 
         simulatorView = root.findViewById(R.id.simulator_view);
         tvProbeResults = root.findViewById(R.id.tv_probe_results);
@@ -66,7 +71,7 @@ public class SimuladorFragment extends Fragment {
 
         // Guardar cálculos y escenario en SQLite (Room)
         if (btnSave != null) {
-            btnSave.setOnClickListener(v -> saveCalculationToDb());
+            btnSave.setOnClickListener(v -> showSaveProjectDialog());
         }
 
         // Actualizar datos de la sonda al tocar o arrastrar
@@ -95,7 +100,42 @@ public class SimuladorFragment extends Fragment {
         tvProbeResults.setText(info);
     }
 
-    private void saveCalculationToDb() {
+    private void showSaveProjectDialog() {
+        if (simulatorView == null || simulatorView.getCharges().isEmpty()) {
+            Toast.makeText(getContext(), "Agrega al menos una carga antes de guardar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        EditText nameInput = new EditText(requireContext());
+        nameInput.setSingleLine(true);
+        nameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        nameInput.setHint("Ej. Dipolo de prueba");
+        nameInput.setTextColor(Color.WHITE);
+        nameInput.setHintTextColor(Color.GRAY);
+        nameInput.setPadding(48, 32, 48, 32);
+
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Nombra tu emulación")
+                .setMessage("Elige un nombre para encontrar fácilmente este campo después.")
+                .setView(nameInput)
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Guardar", null)
+                .create();
+
+        dialog.setOnShowListener(ignored -> dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(button -> {
+                    String projectName = nameInput.getText().toString().trim();
+                    if (projectName.isEmpty()) {
+                        nameInput.setError("Escribe un nombre para continuar");
+                        return;
+                    }
+                    dialog.dismiss();
+                    saveCalculationToDb(projectName);
+                }));
+        dialog.show();
+    }
+
+    private void saveCalculationToDb(String projectName) {
         if (simulatorView == null || simulatorView.getCharges().isEmpty()) {
             Toast.makeText(getContext(), "Agrega al menos una carga antes de guardar", Toast.LENGTH_SHORT).show();
             return;
@@ -132,30 +172,35 @@ public class SimuladorFragment extends Fragment {
         final double finalTotalCharge = calculatedTotalCharge;
         final double finalMinDistance = calculatedMinDistance;
 
-        Scenario scenario = new Scenario("Configuración " + date, simulatorView.getCharges(), date);
+        Scenario scenario = new Scenario(projectName, new java.util.ArrayList<>(simulatorView.getCharges()), date);
 
         Executors.newSingleThreadExecutor().execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(context.getApplicationContext());
+            try {
+                AppDatabase db = AppDatabase.getInstance(context.getApplicationContext());
+                db.scenarioDao().insertScenario(scenario);
 
-            // Guardar escenario
-            db.scenarioDao().insertScenario(scenario);
+                if (userId != -1) {
+                    Calculation fieldCalculation = new Calculation(
+                            userId, "Campo eléctrico", finalTotalCharge, finalMinDistance, res.eMagnitude, "N/C", date
+                    );
+                    Calculation potentialCalculation = new Calculation(
+                            userId, "Potencial eléctrico", finalTotalCharge, finalMinDistance, res.potential, "V", date
+                    );
+                    db.calculationDao().insertCalculation(fieldCalculation);
+                    db.calculationDao().insertCalculation(potentialCalculation);
+                }
 
-            // Guardar cálculos si el usuario está autenticado
-            if (userId != -1) {
-                Calculation fieldCalculation = new Calculation(
-                        userId, "Campo eléctrico", finalTotalCharge, finalMinDistance, res.eMagnitude, "N/C", date
-                );
-                Calculation potentialCalculation = new Calculation(
-                        userId, "Potencial eléctrico", finalTotalCharge, finalMinDistance, res.potential, "V", date
-                );
-                db.calculationDao().insertCalculation(fieldCalculation);
-                db.calculationDao().insertCalculation(potentialCalculation);
-            }
-
-            if (isAdded() && getActivity() != null) {
-                getActivity().runOnUiThread(() ->
-                        Toast.makeText(context, "¡Escenario y cálculos guardados correctamente!", Toast.LENGTH_SHORT).show()
-                );
+                if (isAdded() && getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(context, "Emulación «" + projectName + "» guardada", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            } catch (Exception e) {
+                if (isAdded() && getActivity() != null) {
+                    getActivity().runOnUiThread(() ->
+                            Toast.makeText(context, "No se pudo guardar la emulación", Toast.LENGTH_LONG).show()
+                    );
+                }
             }
         });
     }
